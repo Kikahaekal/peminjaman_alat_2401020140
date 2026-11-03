@@ -240,41 +240,41 @@ Route::post('/peminjaman', function (Request $request) {
     }
 })->name('peminjaman.store');
 
-// Route::get('/peminjaman/{id}/edit', function (int $id) {
-//     try {
-//         $pdo = DB::connection()->getPdo();
-//         siapkanSkemaPeminjaman($pdo);
+Route::get('/peminjaman/{id}/edit', function (int $id) {
+    try {
+        $pdo = DB::connection()->getPdo();
+        siapkanSkemaPeminjaman($pdo);
 
-//         $ambilPeminjaman = $pdo->prepare(
-//             'SELECT id, kode_peminjaman, nama_peminjam, nomor_identitas, jumlah_alat, alat_id
-//              FROM peminjaman_alat WHERE id = :id'
-//         );
-//         $ambilPeminjaman->execute(['id' => $id]);
-//         $dataEdit = $ambilPeminjaman->fetch(PDO::FETCH_ASSOC);
+        $ambilPeminjaman = $pdo->prepare(
+            'SELECT id, kode_peminjaman, nama_peminjam, nomor_identitas, jumlah_alat, alat_id
+             FROM peminjaman_alat WHERE id = :id'
+        );
+        $ambilPeminjaman->execute(['id' => $id]);
+        $dataEdit = $ambilPeminjaman->fetch(PDO::FETCH_ASSOC);
 
-//         if (! $dataEdit) {
-//             return redirect()->route('peminjaman.index')->with(
-//                 'gagal',
-//                 'Data peminjaman tidak ditemukan.'
-//             );
-//         }
+        if (! $dataEdit) {
+            return redirect()->route('peminjaman.index')->with(
+                'gagal',
+                'Data peminjaman tidak ditemukan.'
+            );
+        }
 
-//         $ambilAlat = $pdo->prepare('SELECT id, nama_alat FROM alat ORDER BY nama_alat');
-//         $ambilAlat->execute();
-//         $daftarAlat = $ambilAlat->fetchAll(PDO::FETCH_ASSOC);
+        $ambilAlat = $pdo->prepare('SELECT id, nama_alat FROM alat ORDER BY nama_alat');
+        $ambilAlat->execute();
+        $daftarAlat = $ambilAlat->fetchAll(PDO::FETCH_ASSOC);
 
-//         $peminjaman = $dataEdit;
+        $peminjaman = $dataEdit;
 
-//         return view('peminjaman-edit', compact('peminjaman', 'daftarAlat'));
-//     } catch (Throwable $error) {
-//         report($error);
+        return view('peminjaman-edit', compact('peminjaman', 'daftarAlat'));
+    } catch (Throwable $error) {
+        report($error);
 
-//         return redirect()->route('peminjaman.index')->with(
-//             'gagal',
-//             'Data gagal dibuka untuk diubah. Periksa koneksi database.'
-//         );
-//     }
-// })->name('peminjaman.edit');
+        return redirect()->route('peminjaman.index')->with(
+            'gagal',
+            'Data gagal dibuka untuk diubah. Periksa koneksi database.'
+        );
+    }
+})->name('peminjaman.edit');
 
 // Route::put('/peminjaman/{id}', function (Request $request, int $id) {
 //     try {
