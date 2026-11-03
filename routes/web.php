@@ -276,130 +276,130 @@ Route::get('/peminjaman/{id}/edit', function (int $id) {
     }
 })->name('peminjaman.edit');
 
-// Route::put('/peminjaman/{id}', function (Request $request, int $id) {
-//     try {
-//         $pdo = DB::connection()->getPdo();
-//         siapkanSkemaPeminjaman($pdo);
-//     } catch (Throwable $error) {
-//         report($error);
+Route::put('/peminjaman/{id}', function (Request $request, int $id) {
+    try {
+        $pdo = DB::connection()->getPdo();
+        siapkanSkemaPeminjaman($pdo);
+    } catch (Throwable $error) {
+        report($error);
 
-//         return back()->withInput()->with(
-//             'gagal',
-//             'Data gagal diperbarui. Periksa koneksi dan konfigurasi database.'
-//         );
-//     }
+        return back()->withInput()->with(
+            'gagal',
+            'Data gagal diperbarui. Periksa koneksi dan konfigurasi database.'
+        );
+    }
 
-//     $input = $request->only([
-//         'kode_peminjaman',
-//         'nama_peminjam',
-//         'nomor_identitas',
-//         'jumlah_alat',
-//         'alat_id',
-//     ]);
+    $input = $request->only([
+        'kode_peminjaman',
+        'nama_peminjam',
+        'nomor_identitas',
+        'jumlah_alat',
+        'alat_id',
+    ]);
 
-//     foreach (['kode_peminjaman', 'nama_peminjam', 'nomor_identitas'] as $field) {
-//         $input[$field] = strip_tags(trim((string) ($input[$field] ?? '')));
-//     }
+    foreach (['kode_peminjaman', 'nama_peminjam', 'nomor_identitas'] as $field) {
+        $input[$field] = strip_tags(trim((string) ($input[$field] ?? '')));
+    }
 
-//     $request->merge($input);
-//     $data = $request->validate([
-//         'kode_peminjaman' => ['required', 'string', 'size:10', 'regex:/^[A-Za-z0-9]+$/'],
-//         'nama_peminjam' => ['required', 'string', 'min:3', 'max:100'],
-//         'nomor_identitas' => ['required', 'string', 'min:5', 'max:30', 'regex:/^[A-Za-z0-9-]+$/'],
-//         'jumlah_alat' => ['required', 'integer', 'min:1', 'max:10'],
-//         'alat_id' => ['required', 'integer', 'exists:alat,id'],
-//     ], [
-//         'kode_peminjaman.size' => 'Kode peminjaman harus tepat 10 karakter.',
-//         'kode_peminjaman.regex' => 'Kode peminjaman hanya boleh berisi huruf dan angka.',
-//         'nama_peminjam.min' => 'Nama peminjam minimal 3 karakter.',
-//         'nomor_identitas.min' => 'Nomor identitas minimal 5 karakter.',
-//         'nomor_identitas.regex' => 'Nomor identitas hanya boleh berisi huruf, angka, dan tanda hubung.',
-//         'jumlah_alat.integer' => 'Jumlah alat harus berupa bilangan bulat.',
-//         'jumlah_alat.min' => 'Jumlah alat minimal 1.',
-//         'jumlah_alat.max' => 'Jumlah alat maksimal 10.',
-//         'alat_id.exists' => 'Alat yang dipilih tidak tersedia.',
-//     ]);
+    $request->merge($input);
+    $data = $request->validate([
+        'kode_peminjaman' => ['required', 'string', 'size:10', 'regex:/^[A-Za-z0-9]+$/'],
+        'nama_peminjam' => ['required', 'string', 'min:3', 'max:100'],
+        'nomor_identitas' => ['required', 'string', 'min:5', 'max:30', 'regex:/^[A-Za-z0-9-]+$/'],
+        'jumlah_alat' => ['required', 'integer', 'min:1', 'max:10'],
+        'alat_id' => ['required', 'integer', 'exists:alat,id'],
+    ], [
+        'kode_peminjaman.size' => 'Kode peminjaman harus tepat 10 karakter.',
+        'kode_peminjaman.regex' => 'Kode peminjaman hanya boleh berisi huruf dan angka.',
+        'nama_peminjam.min' => 'Nama peminjam minimal 3 karakter.',
+        'nomor_identitas.min' => 'Nomor identitas minimal 5 karakter.',
+        'nomor_identitas.regex' => 'Nomor identitas hanya boleh berisi huruf, angka, dan tanda hubung.',
+        'jumlah_alat.integer' => 'Jumlah alat harus berupa bilangan bulat.',
+        'jumlah_alat.min' => 'Jumlah alat minimal 1.',
+        'jumlah_alat.max' => 'Jumlah alat maksimal 10.',
+        'alat_id.exists' => 'Alat yang dipilih tidak tersedia.',
+    ]);
 
-//     try {
-//         $cekData = $pdo->prepare('SELECT COUNT(*) FROM peminjaman_alat WHERE id = :id');
-//         $cekData->execute(['id' => $id]);
+    try {
+        $cekData = $pdo->prepare('SELECT COUNT(*) FROM peminjaman_alat WHERE id = :id');
+        $cekData->execute(['id' => $id]);
 
-//         if ((int) $cekData->fetchColumn() === 0) {
-//             return redirect()->route('peminjaman.index')->with(
-//                 'gagal',
-//                 'Data peminjaman tidak ditemukan.'
-//             );
-//         }
+        if ((int) $cekData->fetchColumn() === 0) {
+            return redirect()->route('peminjaman.index')->with(
+                'gagal',
+                'Data peminjaman tidak ditemukan.'
+            );
+        }
 
-//         $cekDuplikat = $pdo->prepare(
-//             'SELECT COUNT(*) FROM peminjaman_alat
-//              WHERE (kode_peminjaman = :kode OR nomor_identitas = :identitas)
-//                AND id <> :id'
-//         );
-//         $cekDuplikat->execute([
-//             'kode' => $data['kode_peminjaman'],
-//             'identitas' => $data['nomor_identitas'],
-//             'id' => $id,
-//         ]);
+        $cekDuplikat = $pdo->prepare(
+            'SELECT COUNT(*) FROM peminjaman_alat
+             WHERE (kode_peminjaman = :kode OR nomor_identitas = :identitas)
+               AND id <> :id'
+        );
+        $cekDuplikat->execute([
+            'kode' => $data['kode_peminjaman'],
+            'identitas' => $data['nomor_identitas'],
+            'id' => $id,
+        ]);
 
-//         if ((int) $cekDuplikat->fetchColumn() > 0) {
-//             return back()->withInput()->with(
-//                 'gagal',
-//                 'Kode peminjaman atau nomor identitas sudah digunakan data lain.'
-//             );
-//         }
+        if ((int) $cekDuplikat->fetchColumn() > 0) {
+            return back()->withInput()->with(
+                'gagal',
+                'Kode peminjaman atau nomor identitas sudah digunakan data lain.'
+            );
+        }
 
-//         $ubah = $pdo->prepare(
-//             'UPDATE peminjaman_alat
-//              SET kode_peminjaman = :kode_peminjaman,
-//                  nama_peminjam = :nama_peminjam,
-//                  nomor_identitas = :nomor_identitas,
-//                  jumlah_alat = :jumlah_alat,
-//                  alat_id = :alat_id,
-//                  updated_at = CURRENT_TIMESTAMP
-//              WHERE id = :id'
-//         );
-//         $ubah->execute([...$data, 'id' => $id]);
+        $ubah = $pdo->prepare(
+            'UPDATE peminjaman_alat
+             SET kode_peminjaman = :kode_peminjaman,
+                 nama_peminjam = :nama_peminjam,
+                 nomor_identitas = :nomor_identitas,
+                 jumlah_alat = :jumlah_alat,
+                 alat_id = :alat_id,
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE id = :id'
+        );
+        $ubah->execute([...$data, 'id' => $id]);
 
-//         return redirect()->route('peminjaman.index')->with(
-//             'berhasil',
-//             'Data peminjaman berhasil diperbarui.'
-//         );
-//     } catch (Throwable $error) {
-//         report($error);
+        return redirect()->route('peminjaman.index')->with(
+            'berhasil',
+            'Data peminjaman berhasil diperbarui.'
+        );
+    } catch (Throwable $error) {
+        report($error);
 
-//         return back()->withInput()->with(
-//             'gagal',
-//             'Data gagal diperbarui. Periksa koneksi dan data yang dimasukkan.'
-//         );
-//     }
-// })->name('peminjaman.update');
+        return back()->withInput()->with(
+            'gagal',
+            'Data gagal diperbarui. Periksa koneksi dan data yang dimasukkan.'
+        );
+    }
+})->name('peminjaman.update');
 
-// Route::delete('/peminjaman/{id}', function (int $id) {
-//     try {
-//         $pdo = DB::connection()->getPdo();
-//         siapkanSkemaPeminjaman($pdo);
+Route::delete('/peminjaman/{id}', function (int $id) {
+    try {
+        $pdo = DB::connection()->getPdo();
+        siapkanSkemaPeminjaman($pdo);
 
-//         $hapus = $pdo->prepare('DELETE FROM peminjaman_alat WHERE id = :id');
-//         $hapus->execute(['id' => $id]);
+        $hapus = $pdo->prepare('DELETE FROM peminjaman_alat WHERE id = :id');
+        $hapus->execute(['id' => $id]);
 
-//         if ($hapus->rowCount() === 0) {
-//             return redirect()->route('peminjaman.index')->with(
-//                 'gagal',
-//                 'Data peminjaman tidak ditemukan.'
-//             );
-//         }
+        if ($hapus->rowCount() === 0) {
+            return redirect()->route('peminjaman.index')->with(
+                'gagal',
+                'Data peminjaman tidak ditemukan.'
+            );
+        }
 
-//         return redirect()->route('peminjaman.index')->with(
-//             'berhasil',
-//             'Data peminjaman berhasil dihapus.'
-//         );
-//     } catch (Throwable $error) {
-//         report($error);
+        return redirect()->route('peminjaman.index')->with(
+            'berhasil',
+            'Data peminjaman berhasil dihapus.'
+        );
+    } catch (Throwable $error) {
+        report($error);
 
-//         return redirect()->route('peminjaman.index')->with(
-//             'gagal',
-//             'Data gagal dihapus. Periksa koneksi database.'
-//         );
-//     }
-// })->name('peminjaman.destroy');
+        return redirect()->route('peminjaman.index')->with(
+            'gagal',
+            'Data gagal dihapus. Periksa koneksi database.'
+        );
+    }
+})->name('peminjaman.destroy');
